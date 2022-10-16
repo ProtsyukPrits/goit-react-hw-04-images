@@ -6,7 +6,7 @@ import { addBaseFetch } from '..//services/api';
 import { Container } from './Common.styled';
 import { Button } from './Button';
 import { Modal } from './Modal';
-// import { Loader } from './Loader';
+import { Loader } from './Loader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -24,14 +24,13 @@ export const App = () => {
   useEffect(() => {
     try {
       const dataFetch = async () => {
-        setIsLoading({ isLoading: true });
+        setIsLoading(true);
 
         const data = await addBaseFetch(query, page, perPage);
+        setMaterials(materials => [...materials, ...data.hits]);
+        console.log('dataFetch', data.hits);
 
-        setMaterials(prevState => [...prevState.materials, ...data.hits]);
-        console.log('data', data.hits);
-
-        setIsLoading({ isLoading: false });
+        setIsLoading(false);
       };
       dataFetch();
     } catch (error) {
@@ -39,16 +38,18 @@ export const App = () => {
     }
   }, [page, perPage, query]);
 
+  console.log('render', materials);
+
   const handleSubmit = e => {
     e.preventDefault();
 
     if (query.trim() === '') {
       toast.error('Nothing found, enter something in the search');
     }
-    setPage({ page: 1 });
-    setQuery({ query: e.target.elements.query.value });
-    setMaterials({ materials: [] });
-    setTotalPages({ totalPages: null });
+    setPage(1);
+    setQuery(e.target.elements.query.value);
+    setMaterials([]);
+    setTotalPages(null);
     e.target.reset();
   };
 
@@ -57,9 +58,7 @@ export const App = () => {
     const totalPages = Math.ceil(loadMoreDataFetch.total / perPage);
     setTotalPages(totalPages);
 
-    setPage(prevState => ({
-      page: prevState.page + 1,
-    }));
+    setPage(prevState => prevState + 1);
   };
 
   const openModal = e => {
@@ -73,7 +72,6 @@ export const App = () => {
     setShowModal(showModal);
   };
 
-  console.log('mater', materials);
   return (
     <Container>
       {showModal && (
@@ -96,7 +94,7 @@ export const App = () => {
         <ImageGallery materials={materials} onClick={openModal} />
       )}
       {/* Loader */}
-      {/* {isLoading && <Loader />} */}
+      {isLoading && <Loader />}
 
       {/* LoadMoreBTN */}
       {page === totalPages
