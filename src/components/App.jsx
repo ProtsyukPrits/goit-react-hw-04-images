@@ -64,11 +64,11 @@ export const App = () => {
     const imageId = Number(e.currentTarget.id);
     const photoIsActive = materials.find(image => image.id === imageId);
     setPhotoIsActive(photoIsActive);
-    setShowModal({ showModal: true });
+    setShowModal(true);
   };
 
   const closeModal = () => {
-    setShowModal(showModal);
+    setShowModal(false);
   };
 
   return (
